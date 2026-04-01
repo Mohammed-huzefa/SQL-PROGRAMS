@@ -57,8 +57,8 @@ IFNULL(OLD.salary,0)
 
 INSERT INTO customers VALUES(105,'rahul',29,70000,'ibm');
 
-UPDATE customers SET salary=80000 WHERE id=10;
+UPDATE customers SET salary=80000 WHERE id=10 LIMIT 1;
 
-DELETE FROM customers WHERE id=20;
+DELETE FROM customers WHERE id=20 LIMIT 1;
 
 SELECT * FROM sal_log;
