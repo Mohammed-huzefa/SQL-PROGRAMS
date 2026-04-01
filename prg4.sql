@@ -1,23 +1,64 @@
-Create Table: 
-> create table Customers (id number, name varchar(10), age number, sal number, address varchar(50));
+USE e4;
 
-Insert records :
->insert into Customers values(10,'abhi',25 ,10000,”Bangalore”); 
->insert into Customers values(20,'rohith',30,9000, ”Delhi”); 
->insert into Customers values(30,'david',28,9000, ”Pune”);
+CREATE TABLE customers(
+    id INT,
+    name VARCHAR(10),
+    age INT,
+    salary INT,
+    address VARCHAR(50)
+);
 
-Creating trigger:
->set serveroutput on; 
-1 create or replace TRIGGER sal_diff 
-2 Before Delete or INSERT OR UPDATE on Customer 
-3 for each row 
-4 when(new.id>0) 
-5 Declare 
-6 	sal_diff number; 
-7 BEGIN 
-8 	sal_diff := :NEW.sal - :OLD.sal; 
-9	 dbms_output.put_line('Previous salary: ' || : OLD.sal); 
-10 	 dbms_output.put_line('Current salary ' || : NEW.sal); 
-11	 dbms_output.put_line ('salary difference: ' || sal_diff); 
-12 END; 
-13 / 
+INSERT INTO customers VALUES(10,'prem',25,10000,'shivamoga');
+INSERT INTO customers VALUES(20,'sagar',33,30000,'hassan');
+INSERT INTO customers VALUES(30,'jeevan',45,45000,'chikkamangaluru');
+
+CREATE TABLE sal_log(
+    msg VARCHAR(255)
+);
+
+CREATE TRIGGER sal_diff_insert
+BEFORE INSERT ON customers
+FOR EACH ROW
+INSERT INTO sal_log(msg)
+VALUES(
+CONCAT(
+'Previous salary:0|Current salary:',
+IFNULL(NEW.salary,0),
+'|Salary difference:',
+IFNULL(NEW.salary,0)
+)
+);
+
+CREATE TRIGGER sal_diff_update
+BEFORE UPDATE ON customers
+FOR EACH ROW
+INSERT INTO sal_log(msg)
+VALUES(
+CONCAT(
+'Previous salary:',
+IFNULL(OLD.salary,0),
+'|Current salary:',
+IFNULL(NEW.salary,0),
+'|Salary difference:',
+IFNULL(NEW.salary,0) - IFNULL(OLD.salary,0)
+)
+);
+
+CREATE TRIGGER sal_diff_delete
+BEFORE DELETE ON customers
+FOR EACH ROW
+INSERT INTO sal_log(msg)
+VALUES(
+CONCAT(
+'Deleted salary:',
+IFNULL(OLD.salary,0)
+)
+);
+
+INSERT INTO customers VALUES(105,'rahul',29,70000,'ibm');
+
+UPDATE customers SET salary=80000 WHERE id=10;
+
+DELETE FROM customers WHERE id=20;
+
+SELECT * FROM sal_log;
