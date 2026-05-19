@@ -2,7 +2,7 @@ mongosh
 
 
 
-use mydb
+use mydb1
 
 
 
